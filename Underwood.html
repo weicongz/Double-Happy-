@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双喜火锅鸡 West End 订货系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --momo: #ff6b6b;
+            --vegetable: #52b788;
+            --be: #f15bb5;
+            --madfresh: #fee440;
+            --packaging: #00bbf9;
+            --woolworth: #9b5de5;
+            --github: #333;
+            --github-light: #4078c0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        /* 删除确认模态框 */
+.delete-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.delete-modal h3 {
+    margin-bottom: 20px;
+    color: var(--danger);
+    font-size: 1.5rem;
+}
+
+.password-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--light-gray);
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.password-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.modal-btn.confirm {
+    background: var(--danger);
+    color: white;
+}
+
+.modal-btn.cancel {
+    background: var(--light-gray);
+    color: var(--dark);
+}
+
+.modal-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        .github-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--github);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .github-link:hover {
+            background: #222;
+            transform: translateY(-2px);
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .auth-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .auth-btn {
+            background: var(--github);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .auth-btn.github {
+            background: var(--github);
+        }
+        
+        .auth-btn.logout {
+            background: var(--danger);
+        }
+        
+        .auth-btn.sync {
+            background: var(--success);
+        }
+        
+        .auth-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .feature-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            background: #e9f5ff;
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tab-btn.active {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .momo-btn { background: var(--momo); }
+        .vegetable-btn { background: var(--vegetable); }
+        .be-btn { background: var(--be); }
+        .madfresh-btn { background: var(--madfresh); color: #333; }
+        .packaging-btn { background: var(--packaging); }
+        .woolworth-btn { background: var(--woolworth); }
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            min-height: 500px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed var(--light-gray);
+        }
+        
+        .store-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .store-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .momo-icon { background: var(--momo); }
+        .vegetable-icon { background: var(--vegetable); }
+        .be-icon { background: var(--be); }
+        .madfresh-icon { background: var(--madfresh); color: #333; }
+        .packaging-icon { background: var(--packaging); }
+        .woolworth-icon { background: var(--woolworth); }
+        
+        .add-product-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .add-product-form input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 200px;
+            transition: border-color 0.3s;
+        }
+        
+        .add-product-form input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .add-product-form button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-product-form button:hover {
+            background: #38b2d9;
+        }
+        
+        .product-list {
+            margin-bottom: 30px;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .product-name {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 20px;
+        }
+        
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .quantity-btn.decrease {
+            background: var(--danger);
+        }
+        
+        .quantity-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.1);
+        }
+        
+        .quantity-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #e1156d;
+        }
+        
+        .generate-section {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .generate-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .generate-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .result-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .result-table.active {
+            display: block;
+        }
+        
+        .table-header {
+            font-weight: 700;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .table-row {
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-cell {
+            flex: 1;
+        }
+        
+        .copy-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .copy-btn:hover {
+            background: #38b2d9;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .sync-status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            flex-direction: column;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .token-input-section {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        
+        .token-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        .instructions {
+            background: #e9f5ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                min-width: 120px;
+            }
+            
+            .store-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .add-product-form {
+                flex-direction: column;
+            }
+            
+            .add-product-form input, 
+            .add-product-form button {
+                width: 100%;
+            }
+            
+            .product-item {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .quantity-controls {
+                margin: 0;
+            }
+            
+            .github-link {
+                position: static;
+                margin-top: 15px;
+                display: inline-flex;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .auth-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="margin-top: 20px; font-weight: 500;" id="loadingText">正在同步数据...</div>
+    </div>
+    <!-- 删除确认模态框 -->
+<div class="delete-modal" id="deleteModal">
+    <div class="delete-modal-content">
+        <h3><i class="fas fa-shield-alt"></i> 删除商品确认</h3>
+        <p>您正在尝试删除商品，此操作不可撤销。</p>
+        <p>请输入安全密码以确认删除：</p>
+        <input type="password" class="password-input" id="deletePassword" placeholder="输入密码：123456" maxlength="6">
+        <div class="modal-buttons">
+            <button class="modal-btn confirm" id="confirmDeleteBtn">确认删除</button>
+            <button class="modal-btn cancel" id="cancelDeleteBtn">取消</button>
+        </div>
+    </div>
+</div>
+    <div class="container">
+        <header>
+            <a href="#" class="github-link" id="githubLink">
+                <i class="fab fa-github"></i> GitHub 仓库
+            </a>
+            <h1>双喜火锅鸡</h1>
+            <p>请每天3：30之前复制订货信息发送给Michael微信</p>
+            <p>内部系统请不要把同步信息分享给别人</p>
+            
+            <div class="auth-section" id="authSection">
+                <button class="auth-btn github" id="githubLogin">
+                    <i class="fab fa-github"></i> 使用GitHub同步
+                </button>
+                <button class="auth-btn logout" id="logoutBtn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> 退出同步
+                </button>
+                <button class="auth-btn sync" id="syncBtn" style="display: none;">
+                    <i class="fas fa-sync-alt"></i> 立即同步
+                </button>
+            </div>
+            
+            <div class="user-info" id="userInfo" style="display: none;">
+                <div class="user-avatar">
+                    <img id="userAvatar" src="" alt="用户头像">
+                </div>
+                <div class="user-name" id="userName"></div>
+            </div>
+            
+            <div class="sync-status" id="syncStatus">
+                <i class="fas fa-cloud"></i> <span id="syncMessage">未连接到GitHub</span>
+            </div>
+        </header>
+        
+        <div id="tokenSection" class="token-input-section" style="display: none;">
+            <h3>GitHub 访问令牌</h3>
+            <input type="password" class="token-input" id="githubToken" placeholder="在此输入您的GitHub个人访问令牌">
+            <button class="auth-btn" id="saveTokenBtn">
+                <i class="fas fa-save"></i> 保存令牌
+            </button>
+            
+            <div class="instructions">
+                <p><strong>如何获取GitHub访问令牌：</strong></p>
+                <ol>
+                    <li>登录您的GitHub账号</li>
+                    <li>访问 <a href="https://github.com/settings/tokens" target="_blank">Personal Access Tokens</a></li>
+                    <li>点击"Generate new token"</li>
+                    <li>设置描述（例如："商品管理系统"）</li>
+                    <li>选择"gist"权限</li>
+                    <li>点击"Generate token"</li>
+                    <li>复制生成的令牌并粘贴到上方输入框</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn momo-btn active" data-tab="momo">
+                <i class="fas fa-shopping-cart"></i> MOMO
+            </button>
+            <button class="tab-btn vegetable-btn" data-tab="vegetable">
+                <i class="fas fa-leaf"></i> 蔬菜
+            </button>
+            <button class="tab-btn be-btn" data-tab="be">
+                <i class="fas fa-utensils"></i> B&E
+            </button>
+            <button class="tab-btn madfresh-btn" data-tab="madfresh">
+                <i class="fas fa-apple-alt"></i> Mad Fresh
+            </button>
+            <button class="tab-btn packaging-btn" data-tab="packaging">
+                <i class="fas fa-box"></i> 打包盒
+            </button>
+            <button class="tab-btn woolworth-btn" data-tab="woolworth">
+                <i class="fas fa-store"></i> Woolworth
+            </button>
+        </div>
+        
+        <div class="content">
+            <!-- MOMO 页面 -->
+            <div class="tab-content active" id="momo-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon momo-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h2>MOMO 商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="momo-product-name" placeholder="输入商品名称">
+                    <button id="momo-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="momo-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="momo">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="momo-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="momo-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="momo">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 蔬菜页面 -->
+            <div class="tab-content" id="vegetable-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon vegetable-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h2>蔬菜商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="vegetable-product-name" placeholder="输入商品名称">
+                    <button id="vegetable-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="vegetable-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="vegetable">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="vegetable-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="vegetable-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="vegetable">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- B&E页面 -->
+            <div class="tab-content" id="be-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon be-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h2>B&E 商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="be-product-name" placeholder="输入商品名称">
+                    <button id="be-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="be-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="be">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="be-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="be-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="be">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mad Fresh页面 -->
+            <div class="tab-content" id="madfresh-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon madfresh-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <h2>Mad Fresh 商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="madfresh-product-name" placeholder="输入商品名称">
+                    <button id="madfresh-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="madfresh-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="madfresh">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="madfresh-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="madfresh-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="madfresh">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 打包盒页面 -->
+            <div class="tab-content" id="packaging-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon packaging-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h2>打包盒商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="packaging-product-name" placeholder="输入商品名称">
+                    <button id="packaging-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="packaging-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="packaging">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="packaging-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="packaging-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="packaging">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Woolworth页面 -->
+            <div class="tab-content" id="woolworth-tab">
+                <div class="store-header">
+                    <div class="store-title">
+                        <div class="store-icon woolworth-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h2>Woolworth 商品管理</h2>
+                    </div>
+                </div>
+                
+                <div class="add-product-form">
+                    <input type="text" id="woolworth-product-name" placeholder="输入商品名称">
+                    <button id="woolworth-add-btn">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="product-list" id="woolworth-product-list">
+                    <div class="no-products">暂无商品，请添加商品</div>
+                </div>
+                
+                <div class="generate-section">
+                    <button class="generate-btn" data-store="woolworth">
+                        <i class="fas fa-table"></i> 生成订单表格
+                    </button>
+                    
+                    <div class="result-table" id="woolworth-result-table">
+                        <div class="table-header">
+                            <div class="table-row">
+                                <div class="table-cell">商品名称</div>
+                                <div class="table-cell">数量</div>
+                            </div>
+                        </div>
+                        <div id="woolworth-table-content">
+                            <!-- 表格内容将由JavaScript动态生成 -->
+                        </div>
+                        <button class="copy-btn" data-store="woolworth">
+                            <i class="fas fa-copy"></i> 复制表格内容
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Michael电话0424960621 Tabby电话0402556518</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        操作成功！
+    </div>
+
+    <script>
+        // 删除操作状态
+let pendingDelete = {
+    storeId: null,
+    productId: null
+};
+
+// DOM元素
+const deleteModal = document.getElementById('deleteModal');
+const deletePasswordInput = document.getElementById('deletePassword');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+// 删除密码
+const DELETE_PASSWORD = "123456";
+        // 配置信息
+        const GIST_FILENAME = 'multi-store-data.json';
+        
+        // 店铺数据模型
+        const stores = [
+            { id: 'momo', name: 'MOMO', color: '--momo', icon: 'fa-shopping-cart' },
+            { id: 'vegetable', name: '蔬菜', color: '--vegetable', icon: 'fa-leaf' },
+            { id: 'be', name: 'B&E', color: '--be', icon: 'fa-utensils' },
+            { id: 'madfresh', name: 'Mad Fresh', color: '--madfresh', icon: 'fa-apple-alt' },
+            { id: 'packaging', name: '打包盒', color: '--packaging', icon: 'fa-box' },
+            { id: 'woolworth', name: 'Woolworth', color: '--woolworth', icon: 'fa-store' }
+        ];
+        
+        // 全局变量
+        let products = {};
+        let githubToken = localStorage.getItem('github_token');
+        let gistId = localStorage.getItem('github_gist_id');
+        let userInfo = JSON.parse(localStorage.getItem('github_user_info'));
+        
+        // DOM元素
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = document.getElementById('loadingText');
+        const notification = document.getElementById('notification');
+        const githubLoginBtn = document.getElementById('githubLogin');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const syncBtn = document.getElementById('syncBtn');
+        const userInfoSection = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const syncMessage = document.getElementById('syncMessage');
+        const tokenSection = document.getElementById('tokenSection');
+        const githubTokenInput = document.getElementById('githubToken');
+        const saveTokenBtn = document.getElementById('saveTokenBtn');
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有店铺
+            stores.forEach(store => {
+                // 初始化内存数据
+                products[store.id] = [];
+                
+                // 添加商品事件
+                document.getElementById(`${store.id}-add-btn`).addEventListener('click', function() {
+                    addProduct(store.id);
+                });
+                // 删除确认按钮事件
+confirmDeleteBtn.addEventListener('click', function() {
+    const password = deletePasswordInput.value;
+    if (password === DELETE_PASSWORD) {
+        // 密码正确，执行删除
+        deleteProduct(pendingDelete.storeId, pendingDelete.productId);
+        deleteModal.style.display = 'none';
+        deletePasswordInput.value = '';
+    } else {
+        // 密码错误
+        showNotification('密码错误，删除操作被取消', true);
+        deletePasswordInput.value = '';
+        deletePasswordInput.focus();
+    }
+});
+
+// 取消删除按钮事件
+cancelDeleteBtn.addEventListener('click', function() {
+    deleteModal.style.display = 'none';
+    deletePasswordInput.value = '';
+    showNotification('删除操作已取消');
+});
+                // 生成表格事件
+                document.querySelector(`.generate-btn[data-store="${store.id}"]`).addEventListener('click', function() {
+                    generateTable(store.id);
+                });
+                
+                // 复制表格事件
+                document.querySelector(`.copy-btn[data-store="${store.id}"]`).addEventListener('click', function() {
+                    copyTableContent(store.id);
+                });
+            });
+            
+            // 选项卡切换事件
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // GitHub同步按钮事件
+            githubLoginBtn.addEventListener('click', function() {
+                tokenSection.style.display = 'block';
+                if (githubToken) {
+                    githubTokenInput.value = githubToken;
+                }
+            });
+            
+            // 退出同步按钮事件
+            logoutBtn.addEventListener('click', logout);
+            
+            // 立即同步按钮事件
+            syncBtn.addEventListener('click', saveDataToGist);
+            
+            // 保存令牌按钮事件
+            saveTokenBtn.addEventListener('click', saveToken);
+            
+            // GitHub仓库链接
+            document.getElementById('githubLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotification('请将代码上传到您的GitHub仓库');
+            });
+            
+            // 初始化UI状态
+            updateUI();
+            
+            // 如果有token，尝试获取用户信息
+            if (githubToken) {
+                getUserInfo();
+            }
+        });
+        
+        // 保存GitHub令牌
+        function saveToken() {
+            const token = githubTokenInput.value.trim();
+            if (!token) {
+                showNotification('请输入GitHub访问令牌', true);
+                return;
+            }
+            
+            githubToken = token;
+            localStorage.setItem('github_token', githubToken);
+            
+            tokenSection.style.display = 'none';
+            showNotification('令牌已保存');
+            
+            // 获取用户信息
+            getUserInfo();
+        }
+        
+        // 获取用户信息
+        function getUserInfo() {
+            showLoading('正在验证令牌...');
+            
+            fetch('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('令牌验证失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                userInfo = {
+                    login: data.login,
+                    name: data.name || data.login,
+                    avatar_url: data.avatar_url
+                };
+                
+                localStorage.setItem('github_user_info', JSON.stringify(userInfo));
+                updateUI();
+                
+                // 检查是否存在Gist
+                checkGistExists();
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+                showNotification('令牌无效，请重新输入', true);
+                tokenSection.style.display = 'block';
+                hideLoading();
+            });
+        }
+        
+        // 检查Gist是否存在
+        function checkGistExists() {
+            if (gistId) {
+                // 已有Gist ID，直接加载数据
+                loadDataFromGist();
+                return;
+            }
+            
+            showLoading('正在检查数据存储...');
+            
+            // 搜索用户的Gist
+            fetch(`https://api.github.com/gists`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(gists => {
+                const dataGist = gists.find(gist => gist.files[GIST_FILENAME]);
+                
+                if (dataGist) {
+                    gistId = dataGist.id;
+                    localStorage.setItem('github_gist_id', gistId);
+                    loadDataFromGist();
+                } else {
+                    // 创建新的Gist
+                    createNewGist();
+                }
+            })
+            .catch(error => {
+                console.error('搜索Gist失败:', error);
+                showNotification('数据加载失败', true);
+                hideLoading();
+            });
+        }
+        
+        // 创建新的Gist
+        function createNewGist() {
+            const initialData = {};
+            stores.forEach(store => {
+                initialData[store.id] = [];
+            });
+            
+            const payload = {
+                description: '多店铺商品管理系统数据',
+                public: false,
+                files: {
+                    [GIST_FILENAME]: {
+                        content: JSON.stringify(initialData)
+                    }
+                }
+            };
+            
+            fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                gistId = data.id;
+                localStorage.setItem('github_gist_id', gistId);
+                
+                // 保存初始数据到内存
+                stores.forEach(store => {
+                    products[store.id] = [];
+                });
+                
+                hideLoading();
+                showNotification('数据存储已创建');
+                renderAllProductLists();
+                updateSyncStatus('数据存储已创建');
+            })
+            .catch(error => {
+                console.error('创建Gist失败:', error);
+                showNotification('数据存储创建失败', true);
+                hideLoading();
+            });
+        }
+        
+        // 从Gist加载数据
+        function loadDataFromGist() {
+            if (!gistId) {
+                showNotification('数据加载失败: 无Gist ID', true);
+                return;
+            }
+            
+            showLoading('正在从GitHub加载数据...');
+            
+            fetch(`https://api.github.com/gists/${gistId}`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const content = data.files[GIST_FILENAME].content;
+                const loadedData = JSON.parse(content);
+                
+                // 更新内存中的数据
+                stores.forEach(store => {
+                    products[store.id] = loadedData[store.id] || [];
+                });
+                
+                hideLoading();
+                showNotification('数据加载成功');
+                updateSyncStatus('数据已从GitHub加载');
+                renderAllProductLists();
+            })
+            .catch(error => {
+                console.error('加载Gist失败:', error);
+                showNotification('数据加载失败', true);
+                updateSyncStatus('数据加载失败');
+                hideLoading();
+            });
+        }
+        
+        // 保存数据到Gist
+        function saveDataToGist() {
+            if (!gistId || !githubToken) {
+                showNotification('未同步，无法保存数据', true);
+                return;
+            }
+            
+            showLoading('正在保存数据到GitHub...');
+            
+            const payload = {
+                description: '多店铺商品管理系统数据 - 更新于 ' + new Date().toLocaleString(),
+                files: {
+                    [GIST_FILENAME]: {
+                        content: JSON.stringify(products)
+                    }
+                }
+            };
+            
+            fetch(`https://api.github.com/gists/${gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                showNotification('数据保存成功');
+                updateSyncStatus('数据已同步到GitHub: ' + new Date().toLocaleTimeString());
+            })
+            .catch(error => {
+                console.error('保存Gist失败:', error);
+                showNotification('数据保存失败', true);
+                updateSyncStatus('数据同步失败');
+                hideLoading();
+            });
+        }
+        
+        // 更新UI状态
+        function updateUI() {
+            if (userInfo) {
+                if (userInfo.avatar_url) {
+                    userAvatar.src = userInfo.avatar_url;
+                } else {
+                    userAvatar.src = 'https://via.placeholder.com/40';
+                }
+                userName.textContent = userInfo.name;
+                userInfoSection.style.display = 'flex';
+                logoutBtn.style.display = 'block';
+                syncBtn.style.display = 'block';
+                githubLoginBtn.style.display = 'none';
+                tokenSection.style.display = 'none';
+            } else {
+                userInfoSection.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                syncBtn.style.display = 'none';
+                githubLoginBtn.style.display = 'block';
+            }
+        }
+        
+        // 更新同步状态
+        function updateSyncStatus(message) {
+            syncMessage.textContent = message;
+        }
+        
+        // 退出同步
+        function logout() {
+            githubToken = null;
+            gistId = null;
+            userInfo = null;
+            
+            localStorage.removeItem('github_token');
+            localStorage.removeItem('github_gist_id');
+            localStorage.removeItem('github_user_info');
+            
+            // 清空内存数据
+            stores.forEach(store => {
+                products[store.id] = [];
+            });
+            
+            updateUI();
+            renderAllProductLists();
+            updateSyncStatus('未连接到GitHub');
+            showNotification('已退出同步');
+        }
+        
+        // 切换选项卡
+        function switchTab(tabId) {
+            // 更新按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+            
+            // 更新内容显示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        }
+        
+        // 添加商品
+        function addProduct(storeId) {
+            if (!githubToken) {
+                showNotification('请先设置GitHub同步', true);
+                return;
+            }
+            
+            const input = document.getElementById(`${storeId}-product-name`);
+            const name = input.value.trim();
+            
+            if (!name) {
+                showNotification('请输入商品名称', true);
+                return;
+            }
+            
+            // 检查是否已存在
+            const exists = products[storeId].some(product => product.name === name);
+            if (exists) {
+                showNotification('该商品已存在', true);
+                return;
+            }
+            
+            // 创建新商品
+            const newProduct = {
+                id: Date.now().toString(),
+                name: name,
+                quantity: 1
+            };
+            
+            // 添加到内存
+            products[storeId].push(newProduct);
+            
+            // 保存到GitHub
+            saveDataToGist();
+            
+            // 重新渲染列表
+            renderProductList(storeId);
+            
+            // 清空输入框
+            input.value = '';
+            input.focus();
+            
+            showNotification('商品添加成功');
+        }
+        
+        // 增加商品数量
+        function increaseQuantity(storeId, productId) {
+            if (!githubToken) {
+                showNotification('请先设置GitHub同步', true);
+                return;
+            }
+            
+            const product = products[storeId].find(p => p.id === productId);
+            if (product) {
+                product.quantity++;
+                saveDataToGist();
+                renderProductList(storeId);
+            }
+        }
+        
+        // 减少商品数量
+        function decreaseQuantity(storeId, productId) {
+            if (!githubToken) {
+                showNotification('请先设置GitHub同步', true);
+                return;
+            }
+            
+            const product = products[storeId].find(p => p.id === productId);
+            if (product && product.quantity > 0) {
+                product.quantity--;
+                saveDataToGist();
+                renderProductList(storeId);
+            }
+        }
+        
+        // 删除商品
+        function deleteProduct(storeId, productId) {
+            if (!githubToken) {
+                showNotification('请先设置GitHub同步', true);
+                return;
+            }
+            
+            // 从内存中删除
+            products[storeId] = products[storeId].filter(p => p.id !== productId);
+            
+            // 保存到GitHub
+            saveDataToGist();
+            
+            // 重新渲染列表
+            renderProductList(storeId);
+            
+            showNotification('商品已删除');
+        }
+        
+        // 渲染所有商品列表
+        function renderAllProductLists() {
+            stores.forEach(store => {
+                renderProductList(store.id);
+            });
+        }
+        
+        // 渲染商品列表
+        function renderProductList(storeId) {
+            const container = document.getElementById(`${storeId}-product-list`);
+            
+            if (!products[storeId] || products[storeId].length === 0) {
+                container.innerHTML = `<div class="no-products">暂无商品，请添加商品</div>`;
+                return;
+            }
+            
+            container.innerHTML = products[storeId].map(product => `
+                <div class="product-item">
+                    <div class="product-name">${product.name}</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn decrease" onclick="decreaseQuantity('${storeId}', '${product.id}')">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <div class="quantity-display">${product.quantity}</div>
+                        <button class="quantity-btn" onclick="increaseQuantity('${storeId}', '${product.id}')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="delete-btn" onclick="requestDeleteProduct('${storeId}', '${product.id}')">
+                        <i class="fas fa-trash-alt"></i> 删除
+                    </button>
+                </div>
+            `).join('');
+        }
+        // 请求删除商品（弹出密码输入框）
+function requestDeleteProduct(storeId, productId) {
+    pendingDelete.storeId = storeId;
+    pendingDelete.productId = productId;
+    deleteModal.style.display = 'flex';
+    deletePasswordInput.focus();
+}
+        // 生成表格
+        function generateTable(storeId) {
+    const tableContent = document.getElementById(`${storeId}-table-content`);
+    const resultTable = document.getElementById(`${storeId}-result-table`);
+    
+    // 始终过滤掉数量为0的商品，无论复选框状态如何
+    let displayProducts = products[storeId].filter(p => p.quantity > 0);
+    
+    if (displayProducts.length === 0) {
+        tableContent.innerHTML = `<div class="no-products">没有数量大于0的商品</div>`;
+        resultTable.classList.add('active');
+        return;
+    }
+    
+    tableContent.innerHTML = displayProducts.map(product => `
+        <div class="table-row">
+            <div class="table-cell">${product.name}</div>
+            <div class="table-cell">${product.quantity}</div>
+        </div>
+    `).join('');
+    
+    resultTable.classList.add('active');
+}
+        
+        // 复制表格内容
+       function copyTableContent(storeId) {
+    // 始终过滤掉数量为0的商品
+    let displayProducts = products[storeId].filter(p => p.quantity > 0);
+    
+    if (displayProducts.length === 0) {
+        showNotification('没有内容可复制', true);
+        return;
+    }
+    
+    const rows = displayProducts.map(product => 
+        `${product.name}\t${product.quantity}`
+    ).join('\n');
+    
+    const tableContent = `商品名称\t数量\n${rows}`;
+    
+    navigator.clipboard.writeText(tableContent)
+        .then(() => {
+            showNotification('表格内容已复制到剪贴板');
+        })
+        .catch(err => {
+            showNotification('复制失败，请重试', true);
+            console.error('复制失败:', err);
+        });
+}
+        
+        // 显示通知
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 显示加载动画
+        function showLoading(message = '正在处理...') {
+            loadingText.textContent = message;
+            loadingOverlay.style.display = 'flex';
+        }
+        
+        // 隐藏加载动画
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+        
+        // 暴露函数到全局作用域
+        window.increaseQuantity = increaseQuantity;
+        window.decreaseQuantity = decreaseQuantity;
+        window.deleteProduct = deleteProduct;
+        window.requestDeleteProduct = requestDeleteProduct;
+        
+        // 初始化数据
+        window.onload = function() {
+            // 尝试从localStorage加载数据
+            const savedData = localStorage.getItem('local_products');
+            if (savedData) {
+                try {
+                    products = JSON.parse(savedData);
+                    renderAllProductLists();
+                } catch (e) {
+                    console.error('解析本地数据失败', e);
+                }
+            } else {
+                // 初始化内存数据
+                stores.forEach(store => {
+                    products[store.id] = [];
+                });
+                renderAllProductLists();
+            }
+        };
+    </script>
+</body>
+</html>
